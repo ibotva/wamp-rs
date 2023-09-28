@@ -3,8 +3,10 @@ mod abort;
 pub(crate) mod helpers {
 
     use std::fmt::Display;
-    use serde::{de::SeqAccess, Deserialize, Serializer, ser, ser::Error};
+    use serde::{de::{SeqAccess, self}, Deserialize, Serializer, ser, ser::Error, Deserializer};
     use serde_json::Value;
+
+    use super::WampMessage;
 
     pub(crate) fn deser_seq_element<'de, T: PartialEq + Deserialize<'de>, E: Display, A: SeqAccess<'de>>(seq: &mut A, error: E) -> Result<T, <A as SeqAccess<'de>>::Error> {
         let element: Option<T> = seq.next_element()?;
@@ -12,6 +14,14 @@ pub(crate) mod helpers {
             Ok(element.unwrap())
         } else {
             Err(serde::de::Error::custom(error))
+        }
+    }
+
+    pub(crate) fn validate_id<'de, T: WampMessage, S: Deserializer<'de>, E: Display>(id: &u8, name: E) -> Result<(), S::Error> {
+        if &T::ID == id {
+            Ok(())
+        } else {
+            Err(de::Error::custom(name))
         }
     }
 
