@@ -15,3 +15,8 @@ pub(crate) mod helpers {
     }
 
 }
+
+pub trait WampMessage {
+    const ID: u8;
+}
+
