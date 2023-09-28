@@ -1,5 +1,7 @@
 mod abort;
 
+pub use abort::Abort;
+
 pub(crate) mod helpers {
 
     use std::fmt::Display;
