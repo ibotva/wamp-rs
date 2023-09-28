@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Serialize, de};
 use serde_json::Value;
 
 use super::{WampMessage, helpers};
@@ -18,6 +18,6 @@ impl Serialize for Abort {
     where
         S: serde::Serializer {
         let details = helpers::value_is_object::<S, _>(&self.details, "Details must be object like.")?;
-        todo!()
+        (Self::ID, &self.reason, &details).serialize(serializer)
     }
 }
