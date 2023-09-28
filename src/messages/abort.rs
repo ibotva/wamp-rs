@@ -20,7 +20,7 @@ impl Serialize for Abort {
     where
         S: serde::Serializer 
     {
-        let details = helpers::value_is_object::<S, _>(&self.details, "Details must be object like.")?;
+        let details = helpers::ser_value_is_object::<S, _>(&self.details, "Details must be object like.")?;
         (Self::ID, &self.reason, &details).serialize(serializer)
     }
 }
@@ -44,10 +44,14 @@ impl<'de> Deserialize<'de> for Abort {
                 A: de::SeqAccess<'vi>, 
             {
                 let message_id: u8 = helpers::deser_seq_element(&mut seq, "Message ID must be type u8.")?;
-                helpers::validate_id::<Abort, S, _>(&message_id, "Abort");
-                todo!()
+                helpers::validate_id::<Abort, A, _>(&message_id, "Abort")?;
+                let reason: String = helpers::deser_seq_element(&mut seq, "Reason must be a String.")?;
+                let details: Value = helpers::deser_seq_element(&mut seq, "Details must be a JSON value.")?;
+                helpers::deser_value_is_object::<A, _>(&details, "Details must be object like.")?;
+                Ok(Abort { reason, details })
             }
         }
-        todo!()
+        
+        deserializer.deserialize_struct("Abort", &["reason", "details"], AbortVisitor(PhantomData, PhantomData, PhantomData))
     }
 }

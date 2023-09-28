@@ -17,15 +17,23 @@ pub(crate) mod helpers {
         }
     }
 
-    pub(crate) fn validate_id<'de, T: WampMessage, D: Deserializer<'de>, E: Display>(id: &u8, name: E) -> Result<(), D::Error> {
+    pub(crate) fn validate_id<'de, T: WampMessage, A: SeqAccess<'de>, E: Display>(id: &u8, name: E) -> Result<(), A::Error> {
         if &T::ID == id {
             Ok(())
         } else {
-            Err(de::Error::custom(name))
+            Err(de::Error::custom(format!("{name} has invalid ID {id}. The ID for {name} must be {}", T::ID)))
         }
     }
 
-    pub(crate) fn value_is_object<S: Serializer, T: Display>(v: &Value, e: T) -> Result<&Value, S::Error> {
+    pub(crate) fn deser_value_is_object<'de, A: SeqAccess<'de>, E: Display>(v: &Value, e: E) -> Result<(), A::Error>  {
+        if v.is_object() {
+            Ok(())
+        } else {
+            Err(de::Error::custom(e))
+        }
+    }
+
+    pub(crate) fn ser_value_is_object<S: Serializer, T: Display>(v: &Value, e: T) -> Result<&Value, S::Error> {
         if v.is_object() {
             Ok(v)
         } else {
