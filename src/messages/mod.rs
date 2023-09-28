@@ -17,7 +17,7 @@ pub(crate) mod helpers {
         }
     }
 
-    pub(crate) fn validate_id<'de, T: WampMessage, S: Deserializer<'de>, E: Display>(id: &u8, name: E) -> Result<(), S::Error> {
+    pub(crate) fn validate_id<'de, T: WampMessage, D: Deserializer<'de>, E: Display>(id: &u8, name: E) -> Result<(), D::Error> {
         if &T::ID == id {
             Ok(())
         } else {

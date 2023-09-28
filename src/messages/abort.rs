@@ -44,6 +44,7 @@ impl<'de> Deserialize<'de> for Abort {
                 A: de::SeqAccess<'vi>, 
             {
                 let message_id: u8 = helpers::deser_seq_element(&mut seq, "Message ID must be type u8.")?;
+                helpers::validate_id::<Abort, S, _>(&message_id, "Abort");
                 todo!()
             }
         }
