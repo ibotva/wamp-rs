@@ -3,7 +3,9 @@ use std::marker::PhantomData;
 use serde::{Serialize, de::{self, Visitor}, Deserialize};
 use serde_json::Value;
 
-use super::{WampMessage, helpers};
+use crate::roles::Roles;
+
+use super::{WampMessage, helpers, MessageDirection};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Goodbye {
@@ -13,6 +15,35 @@ pub struct Goodbye {
 
 impl WampMessage for Goodbye {
     const ID: u64 = 6;
+
+    fn direction(r: Roles) -> &'static MessageDirection {
+        match r {
+            Roles::Callee => &MessageDirection {
+                receives: &true,
+                sends: &true,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &true,
+                sends: &true,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &true,
+                sends: &true,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &true,
+                sends: &true,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &true,
+                sends: &true,
+            },
+        }
+    }
 }
 
 impl Serialize for Goodbye {
