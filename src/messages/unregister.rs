@@ -59,7 +59,7 @@ mod tests {
 
     #[test]
     fn test() {
-        let d1 = r#"[66, 788923562, 2103333224]"#;
+        let d1 = r#"[66,788923562,2103333224]"#;
         let p1 = Unregister {
             request_id: 788923562,
             registration: 2103333224
