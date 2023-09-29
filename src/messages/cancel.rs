@@ -63,21 +63,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn raw_str() {
-        let data = r#"[3,{"message":"The realm does not exist."},"wamp.error.no_such_realm"]"#;
-        let a: Cancel = from_str(data).unwrap();
-        println!("{:#?}", a);
-        assert_eq!(a.options, "wamp.error.no_such_realm");
-    }
-
-    #[test]
-    fn obj_to_str() {
-        let a = Cancel {
-            options: json!({"message":"The realm does not exist."}),
-            request_id:1
+    fn test() {
+        let d1 = r#"[49,9129132,{}]"#;
+        let c1 = Cancel {
+            request_id: 9129132,
+            options: json!({})
         };
-        let data = r#"[3,{"message":"The realm does not exist."},"wamp.error.no_such_realm"]"#;
-        let an = to_string(&a).unwrap();
-        assert_eq!(data, an)
+        assert_eq!(c1, from_str(d1).unwrap());
+        assert_eq!(d1, to_string(&c1).unwrap());
     }
 }
