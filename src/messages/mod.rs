@@ -25,6 +25,8 @@ mod r#yield;
 
 pub use abort::Abort;
 
+use crate::roles::Roles;
+
 pub(crate) mod helpers {
 
     use std::fmt::Display;
@@ -85,7 +87,16 @@ pub(crate) mod helpers {
 
 }
 
+#[derive(Debug, PartialEq, PartialOrd)]
+pub struct MessageDirection {
+    pub receives: &'static bool,
+    pub sends: &'static bool,
+}
+
 pub trait WampMessage {
     const ID: u64;
+
+    fn direction(r: Roles) -> &'static MessageDirection;
 }
+
 

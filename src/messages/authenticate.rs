@@ -3,7 +3,9 @@ use std::marker::PhantomData;
 use serde::{Serialize, Deserialize, de::Visitor};
 use serde_json::Value;
 
-use super::{helpers, WampMessage};
+use crate::roles::Roles;
+
+use super::{helpers, WampMessage, MessageDirection};
 
 pub struct Authenticate {
     pub signature: String,
@@ -12,6 +14,35 @@ pub struct Authenticate {
 
 impl WampMessage for Authenticate {
     const ID: u64 = 5;
+
+    fn direction(r: crate::roles::Roles) -> &'static super::MessageDirection {
+        match r {
+            Roles::Callee => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            },
+        }
+    }
 }
 
 impl Serialize for Authenticate {
