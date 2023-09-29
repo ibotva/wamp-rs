@@ -4,7 +4,9 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde::de::{SeqAccess, Visitor};
 use serde_json::{json, Value};
 
-use super::{helpers, WampMessage};
+use crate::roles::Roles;
+
+use super::{helpers, WampMessage, MessageDirection};
 
 #[derive(Debug)]
 pub struct Call {
@@ -17,6 +19,35 @@ pub struct Call {
 
 impl WampMessage for Call {
     const ID: u64 = 48;
+
+    fn direction(r: Roles) -> &'static MessageDirection {
+        match r {
+            Roles::Callee => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+        }
+    }
 }
 
 impl Serialize for Call {
