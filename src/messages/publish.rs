@@ -4,7 +4,9 @@ use serde::{Deserialize, Deserializer, Serialize};
 use serde::de::{SeqAccess, Visitor};
 use serde_json::{json, Value};
 
-use super::{helpers, WampMessage};
+use crate::roles::Roles;
+
+use super::{helpers, WampMessage, MessageDirection};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Publish {
@@ -17,6 +19,35 @@ pub struct Publish {
 
 impl WampMessage for Publish {
     const ID: u64 = 48;
+
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
+            Roles::Callee => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            }
+        }
+    }
 }
 
 impl Serialize for Publish {
