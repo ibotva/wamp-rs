@@ -3,7 +3,9 @@ use std::marker::PhantomData;
 use serde::{Serialize, de::{self, Visitor}, Deserialize};
 use serde_json::Value;
 
-use super::{WampMessage, helpers};
+use crate::roles::Roles;
+
+use super::{WampMessage, helpers, MessageDirection};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Interrupt {
@@ -13,6 +15,35 @@ pub struct Interrupt {
 
 impl WampMessage for Interrupt {
     const ID: u64 = 69;
+
+    fn direction(r: Roles) -> &'static MessageDirection {
+        match r {
+            Roles::Callee => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+        }
+    }
 }
 
 impl Serialize for Interrupt {
