@@ -3,7 +3,9 @@ use std::marker::PhantomData;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde::de::{SeqAccess, Visitor};
 
-use super::{helpers, WampMessage};
+use crate::roles::Roles;
+
+use super::{helpers, WampMessage, MessageDirection};
 
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -13,6 +15,35 @@ pub struct Unsubscribed {
 
 impl WampMessage for Unsubscribed {
     const ID: u64 = 35;
+
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
+            Roles::Callee => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Caller => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Publisher => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Subscriber => &MessageDirection {
+                receives: &true,
+                sends: &false,
+            },
+            Roles::Dealer => &MessageDirection {
+                receives: &false,
+                sends: &false,
+            },
+            Roles::Broker => &MessageDirection {
+                receives: &false,
+                sends: &true,
+            },
+        }
+    }
 }
 
 impl Serialize for Unsubscribed {
