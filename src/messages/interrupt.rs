@@ -16,8 +16,8 @@ pub struct Interrupt {
 impl WampMessage for Interrupt {
     const ID: u64 = 69;
 
-    fn direction(r: Roles) -> &'static MessageDirection {
-        match r {
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
             Roles::Callee => &MessageDirection {
                 receives: &true,
                 sends: &false,

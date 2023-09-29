@@ -16,8 +16,8 @@ pub struct Goodbye {
 impl WampMessage for Goodbye {
     const ID: u64 = 6;
 
-    fn direction(r: Roles) -> &'static MessageDirection {
-        match r {
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
             Roles::Callee => &MessageDirection {
                 receives: &true,
                 sends: &true,

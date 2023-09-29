@@ -96,7 +96,7 @@ pub struct MessageDirection {
 pub trait WampMessage {
     const ID: u64;
 
-    fn direction(r: Roles) -> &'static MessageDirection;
+    fn direction(role: Roles) -> &'static MessageDirection;
 }
 
 

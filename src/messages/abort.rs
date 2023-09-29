@@ -16,8 +16,8 @@ pub struct Abort {
 impl WampMessage for Abort {
     const ID: u64 = 3;
 
-    fn direction(r: crate::roles::Roles) -> &'static super::MessageDirection {
-        match r {
+    fn direction(role: crate::roles::Roles) -> &'static super::MessageDirection {
+        match role {
             Roles::Callee => &MessageDirection {
                 receives: &true,
                 sends: &false,

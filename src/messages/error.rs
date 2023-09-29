@@ -29,8 +29,8 @@ pub struct WampError  {
 impl WampMessage for WampError {
     const ID: u64 = 8;
 
-    fn direction(r: Roles) -> &'static MessageDirection {
-        match r {
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
             Roles::Callee => &MessageDirection {
                 receives: &true,
                 sends: &true,

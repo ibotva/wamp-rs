@@ -15,8 +15,8 @@ pub struct Authenticate {
 impl WampMessage for Authenticate {
     const ID: u64 = 5;
 
-    fn direction(r: Roles) -> &'static MessageDirection {
-        match r {
+    fn direction(role: Roles) -> &'static MessageDirection {
+        match role {
             Roles::Callee => &MessageDirection {
                 receives: &false,
                 sends: &true,
