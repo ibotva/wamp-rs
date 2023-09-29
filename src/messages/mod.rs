@@ -1,11 +1,34 @@
 mod abort;
+mod call;
+mod authenticate;
+mod cancel;
+mod challenge;
+mod error;
+mod event;
+mod goodbye;
+mod hello;
+mod interrupt;
+mod invocation;
+mod publish;
+mod published;
+mod register;
+mod registered;
+mod result;
+mod subscribe;
+mod subscribed;
+mod unregister;
+mod unregistered;
+mod unsubscribe;
+mod unsubscribed;
+mod welcome;
+mod r#yield;
 
 pub use abort::Abort;
 
 pub(crate) mod helpers {
 
     use std::fmt::Display;
-    use serde::{de::{SeqAccess, self}, Deserialize, Serializer, ser, ser::Error, Deserializer};
+    use serde::{de::{SeqAccess, self}, Deserialize, Serializer, ser::Error};
     use serde_json::Value;
 
     use super::WampMessage;
@@ -19,7 +42,7 @@ pub(crate) mod helpers {
         }
     }
 
-    pub(crate) fn validate_id<'de, T: WampMessage, A: SeqAccess<'de>, E: Display>(id: &u8, name: E) -> Result<(), A::Error> {
+    pub(crate) fn validate_id<'de, T: WampMessage, A: SeqAccess<'de>, E: Display>(id: &u64, name: E) -> Result<(), A::Error> {
         if &T::ID == id {
             Ok(())
         } else {
@@ -43,9 +66,26 @@ pub(crate) mod helpers {
         }
     }
 
+    pub(crate) fn ser_value_is_args<S: Serializer, T: Display>(v: &Value, e: T) -> Result<&Value, S::Error> {
+        if v.is_array() || v.is_null() {
+            Ok(v)
+        } else {
+            Err(S::Error::custom(e))
+        }
+    }
+
+    pub(crate) fn ser_value_is_kwargs<S: Serializer, T: Display>(v: &Value, e: T) -> Result<&Value, S::Error> {
+        if v.is_object() || v.is_null() {
+            Ok(v)
+        } else {
+            Err(S::Error::custom(e))
+        }
+    }
+
+
 }
 
 pub trait WampMessage {
-    const ID: u8;
+    const ID: u64;
 }
 
