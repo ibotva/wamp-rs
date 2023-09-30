@@ -172,7 +172,18 @@ impl<'de> Deserialize<'de> for Messages {
             Interrupt::ID => Ok(Self::Interrupt(helper::<Interrupt, D>(wamp_components)?)),
             Invocation::ID => Ok(Self::Invocation(helper::<Invocation, D>(wamp_components)?)),
             Publish::ID => Ok(Self::Publish(helper::<Publish, D>(wamp_components)?)),
-            
+            Published::ID => Ok(Self::Published(helper::<Published, D>(wamp_components)?)),
+            Register::ID => Ok(Self::Register(helper::<Register, D>(wamp_components)?)),
+            Registered::ID => Ok(Self::Registered(helper::<Registered, D>(wamp_components)?)),
+            WampResult::ID => Ok(Self::Result(helper::<WampResult, D>(wamp_components)?)),
+            Subscribe::ID => Ok(Self::Subscribe(helper::<Subscribe, D>(wamp_components)?)),
+            Subscribed::ID => Ok(Self::Subscribed(helper::<Subscribed, D>(wamp_components)?)),
+            Unregister::ID => Ok(Self::Unregister(helper::<Unregister, D>(wamp_components)?)),
+            Unregistered::ID => Ok(Self::Unregistered(helper::<Unregistered, D>(wamp_components)?)),
+            Unsubscribe::ID => Ok(Self::Unsubscribe(helper::<Unsubscribe, D>(wamp_components)?)),
+            Unsubscribed::ID => Ok(Self::Unsubscribed(helper::<Unsubscribed, D>(wamp_components)?)),
+            Welcome::ID => Ok(Self::Welcome(helper::<Welcome, D>(wamp_components)?)),
+            Yield::ID => Ok(Self::Yield(helper::<Yield, D>(wamp_components)?)),
             _ => {
                 Ok(Self::Extension(wamp_components))
             }
