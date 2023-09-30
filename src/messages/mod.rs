@@ -24,8 +24,12 @@ mod welcome;
 mod r#yield;
 
 pub use abort::Abort;
+use serde::{Deserialize, de, Deserializer};
+use serde_json::{Value, json, from_value};
 
 use crate::roles::Roles;
+
+use self::{authenticate::Authenticate, call::Call, cancel::Cancel, challenge::Challenge, error::WampError, event::Event, goodbye::Goodbye, hello::Hello, interrupt::Interrupt, invocation::Invocation, publish::Publish, published::Published, register::Register, registered::Registered, result::WampResult, subscribe::Subscribe, subscribed::Subscribed, unregister::Unregister, unregistered::Unregistered, unsubscribe::Unsubscribe, unsubscribed::Unsubscribed, welcome::Welcome, r#yield::Yield};
 
 pub(crate) mod helpers {
 
@@ -99,4 +103,80 @@ pub trait WampMessage {
     fn direction(role: Roles) -> &'static MessageDirection;
 }
 
+pub enum Messages {
+    Abort(Abort),
+    Authenticate(Authenticate),
+    Call(Call),
+    Cancel(Cancel),
+    Challenge(Challenge),
+    Error(WampError),
+    Event(Event),
+    Goodbye(Goodbye),
+    Hello(Hello),
+    Interrupt(Interrupt),
+    Invocation(Invocation),
+    Publish(Publish),
+    Published(Published),
+    Register(Register),
+    Registered(Registered),
+    Result(WampResult),
+    Subscribe(Subscribe),
+    Subscribed(Subscribed),
+    Unregister(Unregister),
+    Unregistered(Unregistered),
+    Unsubscribe(Unsubscribe),
+    Unsubscribed(Unsubscribed),
+    Welcome(Welcome),
+    Yield(Yield),
+    Extension(Vec<Value>)
+}
 
+impl<'de> Deserialize<'de> for Messages {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de> 
+    {
+        let wamp_components: Vec<Value> = Deserialize::deserialize(deserializer)?;
+        let wamp_message_id = match wamp_components.first() {
+            Some(v) => { 
+                match v.as_u64() {
+                    Some(v) => Ok(v),
+                    None => Err(de::Error::custom(""))
+                }
+            },
+            None => {
+                Err(de::Error::custom("value"))
+            }
+        }?;
+
+        fn helper<'d, T, D>(wamp_components: Vec<Value>) -> Result<T, D::Error>
+        where
+            T: for<'de> Deserialize<'de>,
+            D: Deserializer<'d>
+        {
+            let value: T = from_value(json!(wamp_components))
+                .map_err(de::Error::custom)?;
+            Ok(value)
+        }
+
+        match wamp_message_id {
+            Abort::ID => Ok(Self::Abort(helper::<Abort, D>(wamp_components)?)),
+            Authenticate::ID => Ok(Self::Authenticate(helper::<Authenticate, D>(wamp_components)?)),
+            Call::ID => Ok(Self::Call(helper::<Call, D>(wamp_components)?)),
+            Cancel::ID => Ok(Self::Cancel(helper::<Cancel, D>(wamp_components)?)),
+            Challenge::ID => Ok(Self::Challenge(helper::<Challenge, D>(wamp_components)?)),
+            WampError::ID => Ok(Self::Error(helper::<WampError, D>(wamp_components)?)),
+            Event::ID => Ok(Self::Event(helper::<Event, D>(wamp_components)?)),
+            Goodbye::ID => Ok(Self::Goodbye(helper::<Goodbye, D>(wamp_components)?)),
+            Hello::ID => Ok(Self::Hello(helper::<Hello, D>(wamp_components)?)),
+            Interrupt::ID => Ok(Self::Interrupt(helper::<Interrupt, D>(wamp_components)?)),
+            Invocation::ID => Ok(Self::Invocation(helper::<Invocation, D>(wamp_components)?)),
+            Publish::ID => Ok(Self::Publish(helper::<Publish, D>(wamp_components)?)),
+            
+            _ => {
+                Ok(Self::Extension(wamp_components))
+            }
+        }
+        
+    }
+}

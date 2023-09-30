@@ -18,7 +18,7 @@ pub struct Publish {
 }
 
 impl WampMessage for Publish {
-    const ID: u64 = 48;
+    const ID: u64 = 16;
 
     fn direction(role: Roles) -> &'static MessageDirection {
         match role {
