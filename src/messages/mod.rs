@@ -24,12 +24,35 @@ pub(crate) mod welcome;
 pub(crate) mod r#yield;
 
 pub use abort::Abort;
+pub use call::Call;
+pub use authenticate::Authenticate;
+pub use cancel::Cancel;
+pub use challenge::Challenge;
+pub use error::{WampError, WampErrorEvent};
+pub use event::Event;
+pub use goodbye::Goodbye;
+pub use hello::Hello;
+pub use interrupt::Interrupt;
+pub use invocation::Invocation;
+pub use publish::Publish;
+pub use published::Published;
+pub use register::Register;
+pub use registered::Registered;
+pub use result::WampResult;
+pub use subscribe::Subscribe;
+pub use subscribed::Subscribed;
+pub use unregister::Unregister;
+pub use unregistered::Unregistered;
+pub use unsubscribe::Unsubscribe;
+pub use unsubscribed::Unsubscribed;
+pub use welcome::Welcome;
+pub use r#yield::Yield;
+
 use serde::{Deserialize, de, Deserializer};
 use serde_json::{Value, json, from_value};
 
 use crate::roles::Roles;
 
-use self::{authenticate::Authenticate, call::Call, cancel::Cancel, challenge::Challenge, error::WampError, event::Event, goodbye::Goodbye, hello::Hello, interrupt::Interrupt, invocation::Invocation, publish::Publish, published::Published, register::Register, registered::Registered, result::WampResult, subscribe::Subscribe, subscribed::Subscribed, unregister::Unregister, unregistered::Unregistered, unsubscribe::Unsubscribe, unsubscribed::Unsubscribed, welcome::Welcome, r#yield::Yield};
 
 pub(crate) mod helpers {
 

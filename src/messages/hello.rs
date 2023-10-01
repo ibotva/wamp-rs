@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 
 use serde::{Serialize, de::{self, Visitor}, Deserialize};
 use serde_json::Value;
+use tungstenite::protocol::Role;
 
 use crate::roles::Roles;
 
