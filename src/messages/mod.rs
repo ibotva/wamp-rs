@@ -1,27 +1,27 @@
-mod abort;
-mod call;
-mod authenticate;
-mod cancel;
-mod challenge;
-mod error;
-mod event;
-mod goodbye;
-mod hello;
-mod interrupt;
-mod invocation;
-mod publish;
-mod published;
-mod register;
-mod registered;
-mod result;
-mod subscribe;
-mod subscribed;
-mod unregister;
-mod unregistered;
-mod unsubscribe;
-mod unsubscribed;
-mod welcome;
-mod r#yield;
+pub(crate) mod abort;
+pub(crate) mod call;
+pub(crate) mod authenticate;
+pub(crate) mod cancel;
+pub(crate) mod challenge;
+pub(crate) mod error;
+pub(crate) mod event;
+pub(crate) mod goodbye;
+pub(crate) mod hello;
+pub(crate) mod interrupt;
+pub(crate) mod invocation;
+pub(crate) mod publish;
+pub(crate) mod published;
+pub(crate) mod register;
+pub(crate) mod registered;
+pub(crate) mod result;
+pub(crate) mod subscribe;
+pub(crate) mod subscribed;
+pub(crate) mod unregister;
+pub(crate) mod unregistered;
+pub(crate) mod unsubscribe;
+pub(crate) mod unsubscribed;
+pub(crate) mod welcome;
+pub(crate) mod r#yield;
 
 pub use abort::Abort;
 use serde::{Deserialize, de, Deserializer};
@@ -189,5 +189,26 @@ impl<'de> Deserialize<'de> for Messages {
             }
         }
         
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{hello::Hello, Messages};
+    use serde_json::{json, to_string, from_str};
+
+    #[test]
+    fn hello_to_enum() {
+        let h = Hello {
+            realm: "some.random.realm".to_string(),
+            details: json!({})
+        };
+        let s = to_string(&h).unwrap();
+        let nh = from_str::<Messages>(&s).unwrap();
+        if let Messages::Hello(nh) = nh {
+            assert_eq!(nh, h)
+        } else {
+            panic!("Value is not a Hello message")
+        }
     }
 }
