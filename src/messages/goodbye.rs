@@ -8,45 +8,45 @@ use crate::roles::Roles;
 use super::{WampMessage, helpers, MessageDirection};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Abort {
+pub struct Goodbye {
     pub details: Value,
     pub reason: String
 }
 
-impl WampMessage for Abort {
-    const ID: u64 = 3;
+impl WampMessage for Goodbye {
+    const ID: u64 = 6;
 
-    fn direction(role: crate::roles::Roles) -> &'static super::MessageDirection {
+    fn direction(role: Roles) -> &'static MessageDirection {
         match role {
             Roles::Callee => &MessageDirection {
                 receives: &true,
-                sends: &false,
+                sends: &true,
             },
             Roles::Caller => &MessageDirection {
                 receives: &true,
-                sends: &false,
+                sends: &true,
             },
             Roles::Publisher => &MessageDirection {
                 receives: &true,
-                sends: &false,
+                sends: &true,
             },
             Roles::Subscriber => &MessageDirection {
                 receives: &true,
                 sends: &false,
             },
             Roles::Dealer => &MessageDirection {
-                receives: &false,
+                receives: &true,
                 sends: &true,
             },
             Roles::Broker => &MessageDirection {
-                receives: &false,
+                receives: &true,
                 sends: &true,
             },
         }
     }
 }
 
-impl Serialize for Abort {
+impl Serialize for Goodbye {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer 
@@ -56,18 +56,18 @@ impl Serialize for Abort {
     }
 }
 
-impl<'de> Deserialize<'de> for Abort {
+impl<'de> Deserialize<'de> for Goodbye {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where 
         D: serde::Deserializer<'de> 
     {
-        struct AbortVisitor(PhantomData<u8>, PhantomData<String>, PhantomData<Value>);
+        struct GoodbyeVisitor(PhantomData<u8>, PhantomData<String>, PhantomData<Value>);
 
-        impl<'vi> Visitor<'vi> for AbortVisitor {
-            type Value = Abort;
+        impl<'vi> Visitor<'vi> for GoodbyeVisitor {
+            type Value = Goodbye;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("WAMP Abort frame, expressed as a sequence.")
+                formatter.write_str("WAMP Goodbye frame, expressed as a sequence.")
             }
 
             fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
@@ -75,40 +75,34 @@ impl<'de> Deserialize<'de> for Abort {
                 A: de::SeqAccess<'vi>, 
             {
                 let message_id: u64 = helpers::deser_seq_element(&mut seq, "Message ID must be type u8.")?;
-                helpers::validate_id::<Abort, A, _>(&message_id, "Abort")?;
+                helpers::validate_id::<Goodbye, A, _>(&message_id, "Goodbye")?;
                 let details: Value = helpers::deser_seq_element(&mut seq, "Details must be a JSON value.")?;
                 let reason: String = helpers::deser_seq_element(&mut seq, "Reason must be a String.")?;
                 helpers::deser_value_is_object::<A, _>(&details, "Details must be object like.")?;
-                Ok(Abort { reason, details })
+                Ok(Goodbye { reason, details })
             }
         }
         
-        deserializer.deserialize_struct("Abort", &["reason", "details"], AbortVisitor(PhantomData, PhantomData, PhantomData))
+        deserializer.deserialize_struct("Goodbye", &["reason", "details"], GoodbyeVisitor(PhantomData, PhantomData, PhantomData))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use serde_json::{from_str, json, to_string};
+    use serde_json::{to_string, from_str};
 
-    use super::*;
-
-    #[test]
-    fn raw_str() {
-        let data = r#"[3,{"message":"The realm does not exist."},"wamp.error.no_such_realm"]"#;
-        let a: Abort = from_str(data).unwrap();
-        println!("{:#?}", a);
-        assert_eq!(a.reason, "wamp.error.no_such_realm");
-    }
+    use super::Goodbye;
 
     #[test]
-    fn obj_to_str() {
-        let a = Abort {
-            details: json!({"message":"The realm does not exist."}),
-            reason: "wamp.error.no_such_realm".to_string()
+    fn test() {
+        let d1 = r#"[6,{"message":"The host is shutting down now."},"wamp.close.system_shutdown"]"#;
+        let g1 = Goodbye {
+            details: serde_json::json!({"message":"The host is shutting down now."}),
+            reason: "wamp.close.system_shutdown".to_string()
         };
-        let data = r#"[3,{"message":"The realm does not exist."},"wamp.error.no_such_realm"]"#;
-        let an = to_string(&a).unwrap();
-        assert_eq!(data, an)
+        let d2 = to_string(&g1).unwrap();
+        let g2: Goodbye = from_str(d1).unwrap();
+        assert_eq!(d1, d2);
+        assert_eq!(g1, g2);
     }
 }
