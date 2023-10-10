@@ -1,6 +1,6 @@
 use std::{net::TcpStream, sync::{Arc, Mutex}};
 use tungstenite::{WebSocket, stream::MaybeTlsStream, Message};
-use crate::{protocol::messages::*, error::Error};
+use core::{protocol::messages::*, error::Error};
 
 use super::client::{self, Socket};
 

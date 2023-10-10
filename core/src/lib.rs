@@ -4,4 +4,3 @@
 pub use maplit;
 pub mod protocol;
 pub mod error;
-pub mod client;
