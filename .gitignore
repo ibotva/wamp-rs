@@ -1,5 +1,7 @@
 *target
 /Cargo.lock
-.vscode
+*.vscode
 .idea
 *.env
+*.lock
+*Cargo.lock

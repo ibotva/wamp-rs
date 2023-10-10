@@ -3,5 +3,7 @@ pub use core::{
     maplit,
     protocol,
     error,
-    client
 };
+
+use client;
+pub use client::{};
