@@ -1,5 +1,7 @@
-pub mod messages;
-pub mod error;
-pub mod regex;
-pub mod uri;
-pub mod roles;
+use core;
+pub use core::{
+    maplit,
+    protocol,
+    error,
+    client
+};
